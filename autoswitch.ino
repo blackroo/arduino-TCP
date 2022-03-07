@@ -93,6 +93,8 @@ void loop() {
 				if(!strcmp(data,"Dust sensor"))
 				{
 					client.print(sensor.smoothDensity);
+					Serial.print("Send data : ");
+					Serial.println(sensor.smoothDensity);
 				}
 				memset(data,0,128);
 			}
@@ -100,7 +102,7 @@ void loop() {
 			
 		}
 
-		if(i>=100){
+		if(i>=200){
 			sensor.Dust_sensor();
 			i=0;
 		}
