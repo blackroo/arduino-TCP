@@ -104,6 +104,7 @@ void loop() {
 
 		if(i>=200){
 			sensor.Dust_sensor();
+			sensor.dht_sensor();
 			i=0;
 		}
 

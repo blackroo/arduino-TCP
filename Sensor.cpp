@@ -37,3 +37,25 @@ float Sensor::Dust_sensor()
     Serial.println("-------------");
     return smoothDensity; 
 }
+
+void Sensor::dht_sensor()
+{
+    DHT dht(DHTPIN, DHTTYPE);
+    dht.begin();
+    float humidity = dht.readHumidity();
+    float temperature = dht.readTemperature();
+
+    if (isnan(temperature) || isnan(humidity)) {
+    //값 읽기 실패시 시리얼 모니터 출력
+    Serial.println("Failed to read from DHT");
+    } else {
+    //온도, 습도 표시 시리얼 모니터 출력
+    Serial.print("Humidity: "); 
+    Serial.print(humidity);
+    Serial.print(" %\t");
+    Serial.print("Temperature: "); 
+    Serial.print(temperature);
+    Serial.println(" *C");
+    }
+
+}
