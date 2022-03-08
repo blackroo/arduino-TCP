@@ -2,7 +2,7 @@
 
 Sensor::Sensor()
 {
-
+    pinMode(ledP,OUTPUT);
 }
 
 Sensor::~Sensor()
@@ -12,7 +12,7 @@ Sensor::~Sensor()
 
 float Sensor::Dust_sensor()
 {
-        
+    float dustDensity = 0;
     digitalWrite(ledP,LOW); // power on the LED  
     delayMicroseconds(280);  
     voMeasured = analogRead(dustPin); // read the dust value  
@@ -21,10 +21,16 @@ float Sensor::Dust_sensor()
     delayMicroseconds(9680);  
     // 0 - 5V mapped to 0 - 1023 integer values
     Serial.println(voMeasured);
-    calcVoltage = (0.17 * (voMeasured*(5.0/1024)) - 0.1) *1000;
-    calcVoltage+=95;
-    Serial.println(calcVoltage);  
-    smoothDensity = calcVoltage * 0.10 + smoothDensity * 0.90;  
+    calcVoltage = voMeasured*(5.0/1024);
+    //dustDensity = (0.17 * calcVoltage - 0.1) *1000;
+    dustDensity = (calcVoltage - vol_setting)/0.005;
+    Serial.println(dustDensity);
+
+
+    if(smoothDensity>0.5)
+        smoothDensity = dustDensity * 0.02 + smoothDensity * 0.98;  
+    else
+        smoothDensity = dustDensity;
 
     Serial.println(smoothDensity);
     Serial.println("-------------");

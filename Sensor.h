@@ -4,11 +4,16 @@
 #pragma once
 #include<Arduino.h>
 
+
+
+#define dustPin A0
+#define ledP 5  //3번포트
+#define vol_setting 1.05
+
+
 class Sensor
 {
-protected:
-    int dustPin = A0;    
-    int ledP = 2;   
+protected: 
     float voMeasured = 0;  
     float calcVoltage = 0;   
     
