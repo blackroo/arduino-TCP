@@ -5,23 +5,27 @@
 #include <cstring>	//memset함수
 #include <Arduino.h>
 
+
+enum socket_type
+{
+    socket_client = 0x01,
+    socket_server = 0x02,
+};
+
 enum location
 {
     my_room=0x11,
 };
 
-enum packet_type
-{
-    request = 0x21,
-    response = 0x22,
-};
 
 enum function_type
 {
-    connect = 0x21,
-    light_switch,
-    senser,
+    init_val = 0x20,
+    senser = 0x21,
 };
+
+void packet_print(char * name,char buffer[],int index);
+
 
 class Packet
 {
@@ -29,6 +33,7 @@ public:
     Packet();
     ~Packet();
     void init_packet(char buffer[]);
+    int init_packet_response(char buffer[]);
 
 private:
 

@@ -8,7 +8,7 @@
 
 #define dustPin A0
 #define ledP 5  //3번포트
-#define vol_setting 0.90
+#define vol_setting 0.85
 
 #define DHTPIN 4        // SDA 핀의 설정 4번포트
 #define DHTTYPE DHT22   // DHT22 (AM2302) 센서종류 설정

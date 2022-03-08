@@ -58,7 +58,6 @@ void setup() {
 void loop() {
 	char buffer[128] = {0x00,};
 	char data[128] = {0x00,};
-	int i=0;
 
 	while (!client.connect(host, port)) {
 		Serial.println("connection failed");
@@ -72,7 +71,6 @@ void loop() {
 		
 		packet.init_packet(buffer);
 		client.print(buffer);
-		sensor.smoothDensity=0;
 		
 		// client.print("hello from ESP8266");
 	}
@@ -102,11 +100,10 @@ void loop() {
 			
 		}
 
-		if(i>=200){
-			sensor.Dust_sensor();
-			sensor.dht_sensor();
-			i=0;
-		}
+
+		sensor.Dust_sensor();
+		sensor.dht_sensor();
+
 
 
 		if(!client.connected())
@@ -114,8 +111,8 @@ void loop() {
 			client.stop();
 			return ;
 		}
-		i++;
-		delay(10);
+
+		delay(2000);
   	}
   
 
