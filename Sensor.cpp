@@ -3,6 +3,7 @@
 Sensor::Sensor()
 {
     pinMode(ledP,OUTPUT);
+
 }
 
 Sensor::~Sensor()
@@ -27,10 +28,10 @@ float Sensor::Dust_sensor()
     Serial.println(dustDensity);
 
 
-    if(smoothDensity>0.5)
-        smoothDensity = dustDensity * 0.02 + smoothDensity * 0.98;  
+    if(smoothDensity>0 && smoothDensity<200)
+        smoothDensity = dustDensity * 0.01 + smoothDensity * 0.99;  
     else
-        smoothDensity = dustDensity;
+        smoothDensity = 20.0;
 
     Serial.println(smoothDensity);
     Serial.println("-------------");

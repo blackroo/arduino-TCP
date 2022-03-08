@@ -8,7 +8,7 @@
 
 #define dustPin A0
 #define ledP 5  //3번포트
-#define vol_setting 1.05
+#define vol_setting 0.95
 
 
 class Sensor
