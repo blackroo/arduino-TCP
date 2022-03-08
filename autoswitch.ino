@@ -5,6 +5,7 @@
 
 #include <ESP8266WiFi.h>
 #include "Packet.h"
+#include "Sensor.h"
 
 #ifndef STASSID
 #define STASSID "KT_GiGA_2G_Wave2_05F8"
@@ -19,6 +20,7 @@ const uint16_t port = 5000;
 
 WiFiClient client;
 Packet packet;
+Sensor sensor;
 
 
 void setup() {
@@ -56,6 +58,7 @@ void setup() {
 void loop() {
 	char buffer[128] = {0x00,};
 	char data[128] = {0x00,};
+	int i=0;
 
 	while (!client.connect(host, port)) {
 		Serial.println("connection failed");
@@ -69,6 +72,7 @@ void loop() {
 		
 		packet.init_packet(buffer);
 		client.print(buffer);
+		sensor.smoothDensity=0;
 		
 		// client.print("hello from ESP8266");
 	}
@@ -86,9 +90,11 @@ void loop() {
 			while (client.available()) {
 				client.read(data,128);
 				Serial.println(data);
-				if(!strcmp(data,"switch on"))
+				if(!strcmp(data,"Dust sensor"))
 				{
-					Serial.println("##########");
+					client.print(sensor.smoothDensity);
+					Serial.print("Send data : ");
+					Serial.println(sensor.smoothDensity);
 				}
 				memset(data,0,128);
 			}
@@ -96,12 +102,19 @@ void loop() {
 			
 		}
 
+		if(i>=200){
+			sensor.Dust_sensor();
+			sensor.dht_sensor();
+			i=0;
+		}
+
+
 		if(!client.connected())
 		{
 			client.stop();
 			return ;
 		}
-
+		i++;
 		delay(10);
   	}
   
