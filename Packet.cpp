@@ -1,5 +1,7 @@
 #include "Packet.h"
 
+#define arduino_location my_room
+
 Packet::Packet()
 {
 
@@ -16,12 +18,10 @@ void Packet::init_packet()
     check_sum=0;
 
     memset(send_data,0,PACKSIZE);
-    send_data[index]=socket_client;
-    index++;
-    send_data[index]=init_val;
-    index++;
-    send_data[index]=my_room;
-    index++;
+    send_data[index++]=socket_client;
+    send_data[index++]=init_val;
+    send_data[index++]=arduino_location;
+
 
     this->checksum(send_data);
 
@@ -38,17 +38,68 @@ int Packet::init_packet_response()
 
     memset(compare_data,0,PACKSIZE);    
 
-    compare_data[index]=socket_server;
-    index++;
-    compare_data[index]=init_val;
-    index++;
-    compare_data[index]=my_room;
-    index++;
+    compare_data[index++]=socket_server;
+    compare_data[index++]=init_val;
+    compare_data[index++]=arduino_location;
+
 
     this->checksum(compare_data);
 
     //packet_print("init compare",compare_data,strlen(compare_data));
     packet_print("init recv",recv_data,strlen(recv_data));
+
+    if(strcmp(compare_data,recv_data))
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+void Packet::period_packet(float dust, float temperature, float humidity)
+{
+    index=0;
+    check_sum=0;
+
+    memset(send_data,0,PACKSIZE);
+    send_data[index++]=socket_client;
+    send_data[index++]=senser_period;
+    send_data[index++]=arduino_location;
+
+    sprintf(&send_data[index++], "%0.2f" ,dust);
+    index += strlen(&send_data[index]);
+    send_data[index++] = ',';
+
+    sprintf(&send_data[index++], "%0.2f" ,temperature);
+    index += strlen(&send_data[index]);
+    send_data[index++] = ',';
+
+    sprintf(&send_data[index++], "%0.2f" ,humidity);
+    index += strlen(&send_data[index]);
+    send_data[index++] = ',';
+
+    this->checksum(send_data);
+
+
+    packet_print("period_packet",send_data,index);
+}
+
+int Packet::period_packet_response()
+{
+    index=0;
+    check_sum=0;
+
+    memset(compare_data,0,PACKSIZE);    
+
+    compare_data[index++]=socket_server;
+    compare_data[index++]=senser_period;
+    compare_data[index++]=arduino_location;
+
+
+    this->checksum(compare_data);
+
+    //packet_print("init compare",compare_data,strlen(compare_data));
+    packet_print("period recv",recv_data,strlen(recv_data));
 
     if(strcmp(compare_data,recv_data))
     {

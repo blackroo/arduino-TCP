@@ -56,6 +56,8 @@ void setup() {
 }
 
 void loop() {
+	int send_timer = 170 ;
+	int recv_fail = 0;
 	int recv_try=0;
 	char buffer[128] = {0x00,};
 	char data[128] = {0x00,};
@@ -104,36 +106,40 @@ void loop() {
 		
 		if(client.available() != 0){
 
-			Serial.println("receiving from remote server");
+			Serial.println("[period] receiving from remote server");
 			
 			while (client.available()) {
-				client.read(data,128);
-				Serial.println(data);
-				if(!strcmp(data,"Dust sensor"))
+				memset(packet.recv_data,0,PACKSIZE);
+				client.read(packet.recv_data,PACKSIZE);
+				//packet.packet_print("recv_data",packet.recv_data,strlen(packet.recv_data));
+				if(packet.period_packet_response()==0)
 				{
-					client.print(sensor.smoothDensity);
-					Serial.print("Send data : ");
-					Serial.println(sensor.smoothDensity);
+					recv_fail=0;
 				}
-				memset(data,0,128);
 			}
-
-			
 		}
 
 
 		sensor.Dust_sensor();
 		sensor.dht_sensor();
 
+		if(send_timer>=180)
+		{
+			packet.period_packet(sensor.smoothDensity,sensor.temperature,sensor.humidity);
+			client.print(packet.send_data);
+			//recv_fail++;
+			send_timer=0;
+		}
 
 
-		if(!client.connected())
+		if(!client.connected() || recv_fail>=4)
 		{
 			client.stop();
 			return ;
 		}
 
-		delay(2000);
+		send_timer++;
+		delay(1000);
   	}
   
 

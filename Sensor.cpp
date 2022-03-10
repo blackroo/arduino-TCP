@@ -1,5 +1,7 @@
 #include "Sensor.h"
 
+#define debug 0
+
 Sensor::Sensor()
 {
     pinMode(ledP,OUTPUT);
@@ -21,11 +23,11 @@ float Sensor::Dust_sensor()
     digitalWrite(ledP,HIGH); // turn the LED off  
     delayMicroseconds(9680);  
     // 0 - 5V mapped to 0 - 1023 integer values
-    Serial.println(voMeasured);
+    
     calcVoltage = voMeasured*(5.0/1024);
     //dustDensity = (0.17 * calcVoltage - 0.1) *1000;
     dustDensity = (calcVoltage - vol_setting)/0.005;
-    Serial.println(dustDensity);
+    
 
 
     if(smoothDensity>0 && smoothDensity<200)
@@ -33,8 +35,12 @@ float Sensor::Dust_sensor()
     else
         smoothDensity = 20.0;
 
+    #if debug
+    Serial.println(voMeasured);
+    Serial.println(dustDensity);
     Serial.println(smoothDensity);
     Serial.println("-------------");
+    #endif
     return smoothDensity; 
 }
 
@@ -42,13 +48,14 @@ void Sensor::dht_sensor()
 {
     DHT dht(DHTPIN, DHTTYPE);
     dht.begin();
-    float humidity = dht.readHumidity();
-    float temperature = dht.readTemperature();
+    humidity = dht.readHumidity();
+    temperature = dht.readTemperature();
 
     if (isnan(temperature) || isnan(humidity)) {
     //값 읽기 실패시 시리얼 모니터 출력
     Serial.println("Failed to read from DHT");
     } else {
+    #if debug
     //온도, 습도 표시 시리얼 모니터 출력
     Serial.print("Humidity: "); 
     Serial.print(humidity);
@@ -56,6 +63,7 @@ void Sensor::dht_sensor()
     Serial.print("Temperature: "); 
     Serial.print(temperature);
     Serial.println(" *C");
+    #endif
     }
 
 }

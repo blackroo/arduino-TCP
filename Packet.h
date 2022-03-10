@@ -23,7 +23,7 @@ enum location
 enum function_type
 {
     init_val = 0x20,
-    senser = 0x21,
+    senser_period = 0x21,
 };
 
 
@@ -43,6 +43,9 @@ public:
     ~Packet();
     void init_packet();
     int init_packet_response();
+    void  period_packet(float dust, float temperature, float humidity);
+    int period_packet_response();
+
     void packet_print(char * name, char data[], int index);
     void checksum(char data[]);
 
