@@ -10,42 +10,56 @@ Packet::~Packet()
 
 }
 
-void Packet::init_packet(char buffer[])
+void Packet::init_packet()
 {
-    int index=0;
-    int i=0, check_sum=0;
+    index=0;
+    check_sum=0;
 
-    memset(buffer,0,sizeof(buffer));
-    buffer[index]=socket_client;
+    memset(send_data,0,PACKSIZE);
+    send_data[index]=socket_client;
     index++;
-    buffer[index]=init_val;
+    send_data[index]=init_val;
     index++;
-    buffer[index]=my_room;
-    index++;
-
-    //checksum
-    while(i<index){
-		check_sum=check_sum^buffer[i];
-		i+=1;     
-	}
-
-    buffer[index]=check_sum;
+    send_data[index]=my_room;
     index++;
 
-    packet_print("init_packet",buffer,index);
+    this->checksum(send_data);
+
+
+    packet_print("init_packet",send_data,index);
     
 
 }
 
-int Packet::init_packet_response(char buffer[])
+int Packet::init_packet_response()
 {
-    int index=0;
-    int i=0, check_sum=0;
+    index=0;
+    check_sum=0;
+
+    memset(compare_data,0,PACKSIZE);    
+
+    compare_data[index]=socket_server;
+    index++;
+    compare_data[index]=init_val;
+    index++;
+    compare_data[index]=my_room;
+    index++;
+
+    this->checksum(compare_data);
+
+    //packet_print("init compare",compare_data,strlen(compare_data));
+    packet_print("init recv",recv_data,strlen(recv_data));
+
+    if(strcmp(compare_data,recv_data))
+    {
+        return -1;
+    }
+
     return 0;
 }
 
 
-void packet_print(char * name,char buffer[],int index)
+void Packet:: packet_print(char * name, char data[],int index)
 {
     int i=0;
     char buf[4] = {0x00,};
@@ -53,10 +67,22 @@ void packet_print(char * name,char buffer[],int index)
 
     Serial.println(name);
         for(i=0; i<index; i++){
-            sprintf(buf,"%x",buffer[i]);
+            sprintf(buf,"%x",data[i]);
 
             Serial.print(buf);
             Serial.print(" ");
         }
     Serial.println();
+}
+
+void Packet::checksum(char data[])
+{
+    int i=0;
+    //checksum
+    while(i<index){
+		check_sum=check_sum^data[i];
+		i+=1;     
+	}
+    data[index]=check_sum;
+    index++;
 }

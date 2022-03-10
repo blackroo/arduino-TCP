@@ -6,6 +6,8 @@
 #include <Arduino.h>
 
 
+#define PACKSIZE 128
+
 enum socket_type
 {
     socket_client = 0x01,
@@ -24,16 +26,25 @@ enum function_type
     senser = 0x21,
 };
 
-void packet_print(char * name,char buffer[],int index);
+
 
 
 class Packet
 {
+
 public:
+    char send_data[PACKSIZE] = {0x00,};
+    char recv_data[PACKSIZE] = {0x00,};
+    char compare_data[PACKSIZE] = {0x00,};
+    int index = 0;
+    int check_sum=0;
+    
     Packet();
     ~Packet();
-    void init_packet(char buffer[]);
-    int init_packet_response(char buffer[]);
+    void init_packet();
+    int init_packet_response();
+    void packet_print(char * name, char data[], int index);
+    void checksum(char data[]);
 
 private:
 

@@ -56,6 +56,7 @@ void setup() {
 }
 
 void loop() {
+	int recv_try=0;
 	char buffer[128] = {0x00,};
 	char data[128] = {0x00,};
 
@@ -69,18 +70,38 @@ void loop() {
 	Serial.println("sending data to server");
 	if (client.connected()) {
 		
-		packet.init_packet(buffer);
-		client.print(buffer);
-		
+		packet.init_packet();
+		client.print(packet.send_data);
+
+		while(recv_try<=3)
+		{
+			if(client.available() != 0){
+
+				Serial.println("[init] receiving from remote server");
+				client.read(packet.recv_data,PACKSIZE);
+				
+
+				if(packet.init_packet_response()==0)
+				{
+					recv_try=0;
+					break;
+				}
+			}
+			recv_try ++;
+			if(recv_try>=3){
+				Serial.println("[init] error reconnect");
+				return;
+			}
+
+			delay(1000);
+		}
 		// client.print("hello from ESP8266");
 	}
 
   // wait for data to be available
   	while(1)
 	{
-		// while (client.available() == 0) {
 		
-		// }
 		if(client.available() != 0){
 
 			Serial.println("receiving from remote server");
